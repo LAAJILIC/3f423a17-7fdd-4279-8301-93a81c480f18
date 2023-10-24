@@ -1,0 +1,15 @@
+.box { 
+    max-height: 50px;
+    width: 100%;
+    top: 0%;
+    z-index: 1; 
+    transition: all 0.5s;
+    transition-timing-function: ease-in;
+    position: sticky;
+    /* position: fixed;  */
+      /*    z-index defines the order of overlapping HTML elements. Elements with a higher index will be placed on top of elements with a lower index.
+ */   
+}
+ .box-color {
+    background-color: rgb(240, 249, 253);
+ }
