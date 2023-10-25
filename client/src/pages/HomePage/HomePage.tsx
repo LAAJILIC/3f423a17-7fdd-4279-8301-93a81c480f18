@@ -1,7 +1,6 @@
 import React, { useReducer, useEffect, useState } from 'react'
-import { getError } from '../../utils'
+import { getError, getTotal } from '../../utils'
 import { APiErr } from '../../types/ApiErr'
-import { CartItemType } from '../../types/cartItem'
 import { Event } from '../../types/Event';
 import Item from '@mui/material/ListItem'
 import { blue } from '@mui/material/colors';
@@ -9,8 +8,7 @@ import axios from '../../axios'
 import { Helmet } from 'react-helmet-async'
 import EventCard from '../../components/EventCard'
 import Grid from '@mui/material/Grid';
-import { Chip, ListItem, Stack } from '@mui/material'
-import './HomePage.css'
+import { Chip } from '@mui/material'
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -23,8 +21,9 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import Badge from '@mui/material/Badge';
-import { Outlet } from 'react-router-dom';
 
+import './HomePage.css'
+import Cart from '../../components/Cart/Cart';
 
     //Styling 
     
@@ -73,6 +72,7 @@ import { Outlet } from 'react-router-dom';
 
 
 type State = {
+  eventsInCart: number,
   events: Event[],
   loading: boolean, 
   error: string;
@@ -86,8 +86,12 @@ type Action =
   | { type: 'FETCH_FAIL',
      payload: string,
     }  
+  | { type: 'ADD',
+    payload: number,
+   }  
 
 let initialState: State = {
+      eventsInCart: 0,
       events: [],
       loading: true, 
       error: ''
@@ -100,17 +104,52 @@ const reducer = (state: State, action: Action) => {
     case 'FETCH_REQUEST': return { ...state, loading: true }
     case 'FETCH_SUCCESS': return { ...state, events: action.payload, loading: false }
     case 'FETCH_FAIL': return { ...state, loading: false, error: action.payload }
+    case 'ADD': return { ...state, eventsInCart: action.payload }
     default: return state
   }
 }    
 
-
 function HomePage() {
-  const [eventsRow, setEventsRow] = useState<Event[]>([]);
+  const [allEvents, setAllEvents] = useState<Event[]>([]);
+  let filteredArray: Event[] = allEvents;
+  //const [filteredArray,setfilteredArray] = useState<Event[]>([]);
   const base_url = "https://teclead-ventures.github.io/data/london-events.json";
   const [{ loading, error }, dispatch] = useReducer<
   React.Reducer<State, Action>
   >(reducer, initialState);
+///////////
+const [searchTerm, setSearchTerm] = useState<string>('');
+const [cart, setCart] = useState<Event[]>([]);
+const [cartOpen, setCartOpen] = useState(false);
+const [total, setTotal] = useState(initialState.eventsInCart)
+const [addId, setAddId] = useState<string>('');
+
+
+const handleAddToCart = (event: Event) => {
+  setAddId(event._id)
+  setCart([...cart, event]);
+  console.log(cart.length)
+  setTotal(total+1);
+  console.log(addId);}
+
+const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+setSearchTerm(e.target.value);}
+
+
+
+ filteredArray = searchTerm !== "" ? (allEvents.filter(event =>
+event.title.toLowerCase().includes(searchTerm.toLowerCase())) ): (cart.length > 0 ? (allEvents.filter((e) => !cart.some((cartitem) => e._id === cartitem._id))) : allEvents);
+
+
+// arrayA.filter((objA) => !cart.some((cartitem) => e._id === cartitem._id));
+// useEffect(()=> {
+//   dispatch({ type: 'ADD', payload: getTotal(total as number)});
+//   console.log(total)
+// },[total])
+
+const handleOpenCartPage = () => {
+  setCartOpen(true);
+};
   const [show, setShow] = useState<boolean>(false);
   const downAndUp = () => {
       if(window.scrollY > 50) {
@@ -129,10 +168,8 @@ function HomePage() {
        try {
         const request = await axios.get(base_url)
         dispatch({ type: 'FETCH_SUCCESS', payload: request.data })
-        setEventsRow(request.data);       
-        //eventsRow.map(event => console.log(event.date));
-        eventsRow.map(event => {
-          //console.log(event.date.slice(0,10));
+        setAllEvents(request.data);       
+        allEvents.map(event => {
           if(!sortedDateArray.includes(event.date.slice(0,10))) { 
             sortedDateArray = [...sortedDateArray, event.date.slice(0,10)];
           }
@@ -144,61 +181,11 @@ function HomePage() {
        } 
     } 
     fetchData();
-  })
- //the dependencies array does not should contain the evenetsRow otherwise it will lead to a infinite loop
-
-//  const [cartItems, setCartItems] = useState<CartItemType[]>([]);
-//  const [cartItem, setCartItem] = useState<CartItemType>();
-//  const [itemToCart, setItemToCart] = useState<Event>();
-
-//   let nb: number;
-//   //let : Event = {};
-//   const handleAddToCart = (id: string) => {
-
-//     setItemToCart(eventsRow.find((event) => event._id === id));
-//     console.log(itemToCart)
-//     eventsRow.filter(event => event._id !== id)
-//     // setCartItems(cartItems.push(isItemInCart))
-//     setCartItem({
-//       _id: itemToCart._id,
-//       title: itemToCart.title,
-//       flyerFront: itemToCart.flyerFront,
-//       date: itemToCart?.date,
-//       city: itemToCart?.city,
-//       country: itemToCart?.country,
-//       amount: 1,
-//     })
-     
-//     setCartItems((prev) => {
-//       if (isItemInCart) {
-//         return prev.map((item) =>
-//           item._id === id
-//             ? { ...item, nb: 1}
-//             : item
-//         );
-//       }
-//       return [...prev, { ...cartItem, amount: nb+1 }];
-//     }); console.log(cartItems)
-//   };
-
-
-const [cartOpen, setCartOpen] = useState(false);
-// const [cartItems, setCartItems] = useState<CartItemType[]>([]);
-// const getTotalItems = (items: CartItemType[]) =>
-// items.reduce((acc, item) => acc + 1, 0);
-const [searchTerm, setSearchTerm] = useState<string>('');
-
-
-const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-setSearchTerm(e.target.value);}
-
-const filteredEvents = searchTerm !== "" ? eventsRow.filter(event =>
-  event.title.toLowerCase().includes(searchTerm.toLowerCase())) : eventsRow;
-
-
+  }, [allEvents])
+ 
   return (
     <div>
-      <Box sx={{ flexGrow: 1 }}>
+      <Box sx={{ flexGrow: 1, position:'relative' }}>
           <AppBar position="static">
             <Toolbar>
               <IconButton
@@ -269,38 +256,39 @@ const filteredEvents = searchTerm !== "" ? eventsRow.filter(event =>
                 >
                   <AccountCircle />
                 </IconButton>
-                <IconButton onClick={() => setCartOpen(true)}>
+                {/* <IconButton onClick={()=> navigate(`/cart`)}> */}
+                <IconButton onClick={handleOpenCartPage}>
                 {/* <Badge badgeContent={total} color="error"> */}
-                <Badge badgeContent={3} color="error">
-
-                  {/* <Badge badgeContent={getTotalItems(cartItems)} color="error"> */}
+                <Badge badgeContent={total} color="error">
                   <ShoppingCartIcon />
                   </Badge>
                </IconButton>
-          
+          {
+            cartOpen ? (
+              <Cart cart={cart}/>
+            ) : null
+          }
                </Toolbar><Box />
             </Toolbar>
           </AppBar>
         </Box>
       
-      {/* <Header />  */}
       <Chip label="Public Events" sx={{ mb: '2%', mt: '2%', justifyContent:'left', bgcolor: blue[200], fontWeight: 'bold'}}/>
 
-          {  finalDateArray.map( date => {
+          {  finalDateArray.map( (date, index) => {
                    return (
-                    <div>
+                    <div key={index}>
                        <div className={`box ${show && 'box-color'}`}>
                  <Item sx={{ mb: '2%', pl:'22%', fontWeight: 'bold', color: blue[400]}}>{date.toString().slice(0,15)}</Item></div>
 
                  
                <Grid container spacing={2} sx={{display: 'flex', justifyContent:'right', alignItems:'center'}}columns={{xs: 4, sm: 8, md: 15 }}>
         { 
-          filteredEvents.map((event, index) => (event.date.slice(0,10) === date.toISOString().slice(0,10) ?
+          filteredArray.map((event, index) => (event.date.slice(0,10) === date.toISOString().slice(0,10) ?
           <Grid item sm={2} md={4} key={index}>
-         <EventCard title={event.title} artists={event.artists} _id={event._id} flyerFront={event.flyerFront}
-         attending={event.attending} date={event.date} startTime={event.startTime} endTime={event.endTime}
-         contentUrl={event.contentUrl} venue={event.venue} city={event.city} country={event.country}
-         private={event.private} __v={event.__v} />
+         <EventCard key={event._id}
+          event={event}
+          onAddToCart={handleAddToCart}/>
          
           </Grid> : null)) }
     
@@ -308,5 +296,4 @@ const filteredEvents = searchTerm !== "" ? eventsRow.filter(event =>
         </div>  )})}
       </div>
   )}
-////////////////////////////////////////
 export default HomePage

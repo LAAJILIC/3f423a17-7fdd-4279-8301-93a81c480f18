@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { ErrorBoundary } from 'react-error-boundary';
 import {
   createBrowserRouter,
   createRoutesFromElements,
@@ -16,11 +17,12 @@ import LocationPage from './pages/LocationPage';
 
 const router = createBrowserRouter(
   createRoutesFromElements(
-    
     <Route path="/" element={<App />}>
     <Route index={true} element={<HomePage />} />
     <Route path="/event/:_id" element={<EventPage /> } />
-    <Route path="/event/:_id/direction" element={<LocationPage /> } />
+    {/* //<Route path="/cart" element={<CartPage /> } /> */}
+
+    {/* <Route path="/event/:_id/direction" element={<LocationPage /> } /> */}
     </Route>
   )
 );
@@ -28,7 +30,10 @@ const router = createBrowserRouter(
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <HelmetProvider>    
+      <ErrorBoundary fallback={<p>Error</p>}>
       <RouterProvider router={router} />
+      </ErrorBoundary >
+
     </HelmetProvider>
   </React.StrictMode>
 );

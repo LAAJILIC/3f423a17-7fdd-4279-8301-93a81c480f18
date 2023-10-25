@@ -13,7 +13,6 @@ import SearchIcon from '@mui/icons-material/Search';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import Badge from '@mui/material/Badge';
 import { Event } from '../types/Event';
- import {CartItemType} from '../types/cartItem';
 
     
     
@@ -56,25 +55,16 @@ import { Event } from '../types/Event';
         },
       },
     }));
- 
-   
-   function Header({input = false, search = ""}) {
 
-      const [cartOpen, setCartOpen] = useState(false);
-      const [cartItems, setCartItems] = useState<CartItemType[]>([]);
-      const getTotalItems = (items: CartItemType[]) =>
-      items.reduce((acc, item) => acc + 1, 0);
-
-  const [searchTerm, setSearchTerm] = useState<string>('');
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    input = true;
-    setSearchTerm(e.target.value);
-    search=searchTerm;
+    interface HeaderProps {
+      total: number;
+      handleSearch: (event: React.ChangeEvent<HTMLInputElement>) => void;
+    }
+    
    
-  
-  };
-      return (
-        <Box sx={{ flexGrow: 1 }}>
+   function Header({handleSearch, total}: HeaderProps) {
+    return (
+      <Box sx={{ flexGrow: 1 }}>
           <AppBar position="static">
             <Toolbar>
               <IconButton
@@ -111,7 +101,7 @@ import { Event } from '../types/Event';
                 <StyledInputBase
                   placeholder="Search…"
                   inputProps={{ 'aria-label': 'search' }}
-                  onChange={handleSearch}
+                  onChange={() => handleSearch}
                   />
               </Search>
                            {/*  */}
@@ -145,9 +135,11 @@ import { Event } from '../types/Event';
                 >
                   <AccountCircle />
                 </IconButton>
-                <IconButton onClick={() => setCartOpen(true)}>
+                <IconButton>
+                {/* <IconButton onClick={handleOpenCartPage}> */}
+
                 {/* <Badge badgeContent={total} color="error"> */}
-                <Badge badgeContent={3} color="error">
+                <Badge badgeContent={total} color="error">
 
                   {/* <Badge badgeContent={getTotalItems(cartItems)} color="error"> */}
                   <ShoppingCartIcon />
@@ -157,11 +149,6 @@ import { Event } from '../types/Event';
                </Toolbar><Box />
             </Toolbar>
           </AppBar>
-        </Box>
-      );
-    }
-export default Header;
+        </Box>)}
 
-
-
-  
+        export default Header

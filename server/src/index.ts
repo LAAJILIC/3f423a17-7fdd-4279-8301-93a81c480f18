@@ -9,7 +9,7 @@ const app = express();
 app.use(
     cors({
         credentials: true,
-        origin: ['http://localhost:3001']
+        origin: ['http://localhost:3000']
     })
 )
 app.get('/api/events', async (req: Request, res: Response) => {
@@ -33,21 +33,9 @@ app.get('/api/event/:_id', async (req, res) => {
      const event = response.data.find( item => item._id === _id); // Find the object by ID
   console.log(event)
     if (event) { return   res.json(event); }
-      // Object not found
       else return res.status(404).json({ message: 'Object not found' });
     
-  
-    // Object found, return it as JSON
   });
-  
-// app.get('/api/events/:title', (req: Request, res: Response) => {
-//       const {title} = req.params
-//       const data = res.json("https://teclead-ventures.github.io/data/london-events.json").
-
-//        const event = [...res.json('https://teclead-ventures.github.io/data/london-events.json')].find((event) => event.title === title)
-//        console.log(event)
-//        res.status(200).json(event)})
-
 app.listen(PORT, () => {
     console.log(`server is running on http://localhost:${PORT}`)
 })
