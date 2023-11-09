@@ -3,7 +3,7 @@
     width: 100%;
     top: 0%;
     z-index: 1; 
-    transition: all 0.5s;
+    transition: all 0.2s;
     transition-timing-function: ease-in;
     position: sticky;
     /* position: fixed;  */

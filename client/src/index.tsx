@@ -10,19 +10,16 @@ import {
 import { HelmetProvider } from 'react-helmet-async';
 import './index.css';
 import App from './App';
-import HomePage from './pages/HomePage/HomePage';
-import EventPage from './pages/EventPage';
-import LocationPage from './pages/LocationPage';
+import HomePage from './components/HomePage/HomePage';
 
 
 const router = createBrowserRouter(
   createRoutesFromElements(
     <Route path="/" element={<App />}>
-    <Route index={true} element={<HomePage />} />
-    <Route path="/event/:_id" element={<EventPage /> } />
-    {/* //<Route path="/cart" element={<CartPage /> } /> */}
+   <Route index={true} element={<HomePage />} />
 
-    {/* <Route path="/event/:_id/direction" element={<LocationPage /> } /> */}
+    <Route path="/event/:_id" element={<HomePage /> } />
+    {/* //<Route path="/cart" element={<CartPage /> } /> */}
     </Route>
   )
 );

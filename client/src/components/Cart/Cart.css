@@ -1,8 +1,11 @@
 .shoppingcart {
-     margin-top: 18%;
-      position: fixed;
+     margin-top: 20%;
+      position: absolute;
+      max-height: 80%;
 }
 
 .visibility {
       display: none;
+      background-color: rgb(166, 169, 168);
+
 }

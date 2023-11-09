@@ -8,36 +8,45 @@ import Avatar from '@mui/material/Avatar';
 import Typography from '@mui/material/Typography';
 import { Event } from '../../types/Event';
 import './Cart.css'
+import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button'
+import DeleteIcon from '@mui/icons-material/Delete';
+import { Grid } from '@mui/material';
+import { grey } from '@mui/material/colors';
+
 interface ShoppingCartProps {
     cart: Event[];
+    handledelete: (event: Event) => void;
   }
   
-  const Cart: React.FC<ShoppingCartProps> = ({ cart }) => {  
+const Cart: React.FC<ShoppingCartProps> = ({ cart, handledelete }) => {  
     const [show, setShow] = useState<boolean>(false);
     const downAndUp = () => {
         if(window.scrollY > 30) {
             setShow(true);
         } else { setShow(false);}
     };
-  
     useEffect(() => {
       window.addEventListener("scroll", downAndUp);
       return () => window.removeEventListener("scroll", downAndUp);
     }, []);
-    
-    return (
 
+    return (
     <div className={`shoppingcart ${show && 'visibility'}`}>
-    <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper'}}>
-      
+      <Grid sx={{ bgcolor: grey[100]}}>
+      <List sx={{ width: '100%', mt:'10%' ,maxWidth: 400, maxHeight: 250,
+        overflow: 'auto'}}>
       {cart.map((event) => (  
-        <div>
-         <ListItem alignItems="flex-start">
+                <li key={event._id}>
+         <ListItem alignItems="flex-start"  secondaryAction={
+                    <IconButton edge="end" aria-label="delete">
+                      <DeleteIcon onClick={() => handledelete(event)}/>
+                    </IconButton>
+                  }>
         <ListItemAvatar>
           <Avatar alt="" src={event.flyerFront} />
         </ListItemAvatar>
         <ListItemText
-          primary="Brunch this weekend?"
           secondary={
             <React.Fragment>
               <Typography
@@ -48,14 +57,16 @@ interface ShoppingCartProps {
               >
                 {event.title}
               </Typography>
-{event.country}            </React.Fragment>
+            </React.Fragment>
           }
         />
       </ListItem>
-      <Divider variant="inset" component="li" /> </div>))}
-
-
-    </List></div>
+      <Divider variant="inset" component="li" /> 
+        </li>))}
+       </List>
+       <Button variant="contained" sx={{ display: 'right', mt: 1, mb:1,ml: 5 }}onClick={() => console.log('Bezahlung')}>Confirm Order</Button>
+       </Grid>
+    </div> 
   );
         }
 export default Cart

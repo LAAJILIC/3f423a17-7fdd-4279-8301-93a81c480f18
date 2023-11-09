@@ -1,6 +1,4 @@
-import React, {useState} from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@mui/material';
+import React from 'react';
 import Card from '@mui/material/Card';
 import CardHeader from '@mui/material/CardHeader';
 import CardMedia from '@mui/material/CardMedia';
@@ -11,23 +9,20 @@ import MoreVertIcon from '@mui/icons-material/MoreVert';
 import AddLocationIcon from '@mui/icons-material/AddLocation';
 import Item from '@mui/material/ListItem'
 import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
-
 import { Event } from '../types/Event';
-
 
 interface EventCardProps {
   event: Event;
   onAddToCart: (event: Event) => void;
+  open: (event: Event) => void;
 }
 
 
-export default function EventCard ({ event, onAddToCart}: EventCardProps) {
+export default function EventCard ({ event, onAddToCart, open}: EventCardProps) {
 
-const navigate = useNavigate();
-const openGoogleMaps = () => {
+  const openGoogleMaps = () => {
   const googleMapsURL = event.venue.direction;
-  window.open(googleMapsURL, '_blank');
-};
+  window.open(googleMapsURL, '_blank'); };
   return (
     <Card sx={{ maxWidth: 345, maxHeight: 500 }}>
       <CardHeader sx={{ mt: 1, maxHeight: 50 }} fontSize={8} 
@@ -45,16 +40,15 @@ const openGoogleMaps = () => {
         subheader={event.artists.slice(0,2).map(artist => artist.name)}
       
       />
-      <CardMedia onClick={() => navigate(`/event/${event._id}`)}
+      {/* <CardMedia onClick={() => navigate(`/event/${event._id}`)} */}
+      <CardMedia  onClick={() => open(event)}
         component="img"
         height="194"
         image={event.flyerFront}
         alt=""
       />
       <CardContent>
-        {/* <IconButton onClick={() => navigate(`/event/${event._id}/direction`)} */}
         <IconButton onClick={openGoogleMaps}
-
                 size="medium"
                 edge="start"
                 color="inherit"
@@ -68,7 +62,6 @@ const openGoogleMaps = () => {
           <Item sx={{ mb: '1%', pl:'2%', fontWeight: 'bold' }}>{event.startTime}</Item>
           <Item sx={{ mb: '1%', pl:'2%', fontWeight: 'bold' }}>{event.endTime}</Item>
       </CardContent>
-    
     </Card>
   );
 }
